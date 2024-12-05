@@ -24,7 +24,7 @@ async function createIndexHtmlWithLinks(files, outputFile) {
   const links = files.map((file) => {
     const relativePath = path.relative(path.resolve('./'), file),
       moduleName = relativePath.split(path.sep)[1].replaceAll('_',' '); // Calculate the relative path from the script's running directory to the file
-    return `<li><a href="${relativePath}">${moduleName}</a></li>`;
+    return `<li><a href="${relativePath}" target="_blank">${moduleName}</a></li>`;
   });
 
   const htmlContent = `
