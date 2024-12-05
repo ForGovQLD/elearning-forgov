@@ -1,0 +1,11 @@
+{
+  "name": "elearning-forgov",
+  "version": "0.0.1",
+  "description": "Host repository for eLearning modules delivered on the For government website (www.forgov.qld.gov.au).",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
