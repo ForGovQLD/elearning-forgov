@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?><svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 126.8 108.1"><defs><style>.cls-1 {
+        fill: #1c3664;
+        stroke: #1c3664;
+        stroke-miterlimit: 10;
+        stroke-width: 2px;
+      }
+
+      .cls-2 {
+        fill: #05325f;
+      }
+
+      .cls-2, .cls-3 {
+        stroke-width: 0px;
+      }
+
+      .cls-3 {
+        fill: #fff;
+      }</style></defs><path class="cls-2" d="M89.9,7.4h-.5l-.4.3-14.4,11.6c-7.2,5.8-15.8,9.5-24.9,10.7v2.9c9.7-1.2,19-5.2,26.7-11.4l13.7-11v80.2l-13.7-11c-7.7-6.2-16.9-10.1-26.7-11.4v2.9c9.1,1.2,17.7,4.9,24.9,10.7l14.4,11.6.4.3h3.6v-30c5.1-2.2,8.6-7.3,8.6-13.2s-3.5-11-8.6-13.2V7.4h-3.1Z"/><path class="cls-2" d="M49.9,83V29.9c-.4,0-.7,0-1,0h-4.9s-28,0-28,0h-1.5v41.3h11.8v29.5h23.6v-17.7Z"/><path class="cls-3" d="M93,40.7c3.4,2,5.8,5.7,5.8,10s-2.3,8-5.8,10v-20h0Z"/><polygon class="cls-3" points="46.9 71.2 46.9 97.7 29.2 97.7 29.2 71.2 44 71.2 46.9 71.2"/><polygon class="cls-3" points="44 68.2 17.4 68.2 17.4 32.8 44 32.8 46.9 32.8 46.9 68.2 44 68.2"/><line class="cls-1" x1="102.8" y1="38.1" x2="112.2" y2="32.8"/><line class="cls-1" x1="104.5" y1="50.5" x2="112.3" y2="50.5"/><line class="cls-1" x1="102.8" y1="63" x2="112.2" y2="68.2"/></svg>
