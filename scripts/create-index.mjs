@@ -10,14 +10,20 @@ async function findIndexFiles(directory, baseDirectory = directory) {
     .filter((dirent) => dirent.isFile() && dirent.name === TARGET_FILE_NAME)
     .map((dirent) => path.join(directory, dirent.name));
 
+  // If TARGET_FILE_NAME is found in this directory, stop recursion here
+  if (files.length > 0) {
+    return files;
+  }
+
   const directories = filesAndDirectories.filter((dirent) => dirent.isDirectory());
+  let allFiles = [];
 
   for await (const dirent of directories) {
     const nestedFiles = await findIndexFiles(path.join(directory, dirent.name), baseDirectory);
-    files.push(...nestedFiles);
+    allFiles.push(...nestedFiles);
   }
 
-  return files;
+  return allFiles;
 }
 
 async function createIndexHtmlWithLinks(files, outputFile) {
