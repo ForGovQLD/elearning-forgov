@@ -22,16 +22,16 @@ const changeStoryToIndexHtml = async (directory, storyFileFound = false) => {
     // Rename each story.html file to index.html
     storyFiles.forEach(file => {
       fs.rename(
-        path.join(directory, 'story.html'),
-        path.join(directory, 'index.html'),
+        path.join(directory, "story.html"),
+        path.join(directory, "index.html"),
         (err) => {
           if (err) {
-            console.error(`Error renaming file ${file.name}:`, err);
+            console.error(`\u001b[1;31mError \u001b[0mrenaming file ${file.name}:`, err);
           } else {
-            console.log(`Renamed ${file.name} to index.html`);
+            console.log(`\u001b[1;32mRenamed \u001b[0m${file.name} to index.html`);
           }
         }
-      )
+      );
     });
   }
 
@@ -47,10 +47,28 @@ const changeStoryToIndexHtml = async (directory, storyFileFound = false) => {
 
   // Return whether any story.html files were found and renamed
   return storyFileFound;
+};
 
-}
+const updateAurionElearningIndex = async (sourceDir, indexHtmlPath = "./index.html") => {
+  const modules = (await fs.promises.readdir(sourceDir, { withFileTypes: true }))
+    .filter((dirent) => dirent.isDirectory())
+    .map((dirent) => dirent.name);
 
-const updateModules = async (source_dir) => {
+  const ulHtml = `<ul>
+  ${modules.map((module) => `<li><a href="${path.join(sourceDir, module, "index.html")}" target="_blank">${module.replace(/_/g, " ")}</a></li>`).join("\n")}
+  </ul>`;
+
+  let html = await fs.promises.readFile(indexHtmlPath, "utf8");
+
+  html = html.replace(/(<li>\s*Aurion elearning\s*)(<ul>[\s\S]*?<\/ul>)/i,`$1${ulHtml}`);
+
+  await fs.promises.writeFile(indexHtmlPath, html);
+  console.log(
+    `\u001b[1;32mUpdated \u001b[0mAurion elearning module list in ${indexHtmlPath}`
+  );
+};
+
+const updateModules = async (source_dir = "modules/Aurion_elearning") => {
   const directories = fs.readdirSync(source_dir, { withFileTypes: true })
     .filter(dirent => dirent.isDirectory())
     .map(dirent => path.join(source_dir, dirent.name));
@@ -63,27 +81,30 @@ const updateModules = async (source_dir) => {
     const storyFileFound = await changeStoryToIndexHtml(fullPath);
 
     if (storyFileFound) {
-    console.log(`Updated ${fullPath} to index.html`);
+      console.log(`\u001b[1;32mUpdated \u001b[0m${fullPath} to index.html`);
     } else {
-      console.log(`No story.html found in ${fullPath}`);
+      console.log(`\u001b[1;31mNo story.html found \u001b[0min ${fullPath}`);
     }
 
-    const newDirName = fullPath.replace(/ /g, '_');
+    const newDirName = fullPath.replace(/ /g, "_");
     if (newDirName !== fullPath) {
       // Rename the directory to replace spaces with underscores
       fs.rename(fullPath, newDirName, (err) => {
         if (err) {
-          console.error(`Error renaming directory ${fullPath}:`, err);
+          console.error(`\u001b[1;31mError \u001b[0mrenaming directory ${fullPath}:`, err);
         } else {
-          console.log(`Renamed directory ${fullPath} to ${newDirName}`);
+          console.log(`\u001b[1;32mRenamed directory \u001b[0m${fullPath} to ${newDirName}`);
         }
       });
     }
   }
-}
+
+  // After processing all directories, update the Aurion elearning module links
+  // listed in the repo index.html file.
+  await updateAurionElearningIndex(source_dir);
+};
 
 const [, , SOURCE_DIR] = process.argv;
 
 // Run the updates on the target directory
 updateModules(SOURCE_DIR);
-
