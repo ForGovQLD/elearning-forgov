@@ -60,7 +60,7 @@ const updateAurionElearningIndex = async (sourceDir, indexHtmlPath = "./index.ht
 
   let html = await fs.promises.readFile(indexHtmlPath, "utf8");
 
-  html = html.replace(/(<li>\s*Aurion elearning\s*)(<ul>[\s\S]*?<\/ul>)/i,`$1${ulHtml}`);
+  html = html.replace(/(<li>\s*Aurion elearning updates\s*)(<ul>[\s\S]*?<\/ul>)/i,`$1${ulHtml}`);
 
   await fs.promises.writeFile(indexHtmlPath, html);
   console.log(
@@ -86,14 +86,14 @@ const updateModules = async (source_dir = "modules/Aurion_elearning") => {
       console.log(`\u001b[1;31mNo story.html found \u001b[0min ${fullPath}`);
     }
 
-    const newDirName = fullPath.replace(/ /g, "_");
-    if (newDirName !== fullPath) {
+    const newDirName = directory.replace(/ /g, "_");
+    if (newDirName !== directory) {
       // Rename the directory to replace spaces with underscores
-      fs.rename(fullPath, newDirName, (err) => {
+      fs.rename(directory, newDirName, (err) => {
         if (err) {
-          console.error(`\u001b[1;31mError \u001b[0mrenaming directory ${fullPath}:`, err);
+          console.error(`\u001b[1;31mError \u001b[0mrenaming directory ${directory}:`, err);
         } else {
-          console.log(`\u001b[1;32mRenamed directory \u001b[0m${fullPath} to ${newDirName}`);
+          console.log(`\u001b[1;32mRenamed directory \u001b[0m${directory} to ${newDirName}`);
         }
       });
     }
