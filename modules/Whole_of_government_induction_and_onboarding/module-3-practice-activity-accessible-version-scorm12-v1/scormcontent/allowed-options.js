@@ -1,3 +1,0 @@
-window.allowedOptions = () => ({
-  outsideDriver: false
-})
