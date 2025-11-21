@@ -10,10 +10,10 @@ import fs from "fs";
 import path from "path";
 
 const TARGET_DIRECTORIES = [
-        'modules/Whole_of_government_induction_and_onboarding/Module-1-working-in-the-queensland-public-sector-version-1',
-        'modules/Whole_of_government_induction_and_onboarding/Module-2-integrity-and-ethics-version-1',
-        'modules/Whole_of_government_induction_and_onboarding/Module-3-policy-version-1',
-        'modules/Whole_of_government_induction_and_onboarding/Module-4-spirit-of-service-version-1'
+        'modules/Whole_of_government_induction_and_onboarding/Module-1-Working-in-the-queensland-public-sector',
+        'modules/Whole_of_government_induction_and_onboarding/Module-2-Integrity-and-ethics',
+        'modules/Whole_of_government_induction_and_onboarding/Module-3-Policy',
+        'modules/Whole_of_government_induction_and_onboarding/Module-4-Spirit-of-service'
       ];
 const JS_FILE = 'scripts/updateCourseData.js';
 
