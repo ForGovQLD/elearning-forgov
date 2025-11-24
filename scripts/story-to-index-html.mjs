@@ -13,7 +13,8 @@ const TARGET_DIRECTORIES = [
         'modules/Whole_of_government_induction_and_onboarding/Module-1-Working-in-the-queensland-public-sector',
         'modules/Whole_of_government_induction_and_onboarding/Module-2-Integrity-and-ethics',
         'modules/Whole_of_government_induction_and_onboarding/Module-3-Policy',
-        'modules/Whole_of_government_induction_and_onboarding/Module-4-Spirit-of-service'
+        'modules/Whole_of_government_induction_and_onboarding/Module-4-Spirit-of-service',
+        'modules/Whole_of_government_induction_and_onboarding/test-01-module-embeds'
       ];
 const JS_FILE = 'scripts/updateCourseData.js';
 
@@ -73,12 +74,12 @@ const updateModules = async (directories) => {
       // If any story.html files were found and renamed, copy the JS file
       fs.copyFile(
         JS_FILE,
-        path.join(directory, 'locales/updateCourseData.js'),
+        path.join(directory, 'lib/updateCourseData.js'),
         (err) => {
           if (err) {
             console.error(`Error copying ${JS_FILE} to ${directory}:`, err);
           } else {
-            console.log(`Copied ${JS_FILE} to ${directory}/locales/updateCourseData.js`);
+            console.log(`Copied ${JS_FILE} to ${directory}/lib/updateCourseData.js`);
           }
         }
       )
@@ -89,7 +90,7 @@ const updateModules = async (directories) => {
       if (fs.existsSync(indexHtmlPath)) {
         let html = await fs.promises.readFile(indexHtmlPath, "utf8");
         const lzwScript = `    <script type="text/javascript" src="lib/lzwcompress.js"></script>`;
-        const scriptTag = `    <script type="text/javascript" src="locales/updateCourseData.js"></script>`;
+        const scriptTag = `    <script type="text/javascript" src="lib/updateCourseData.js"></script>`;
         if (html.includes(lzwScript) && !html.includes(scriptTag)) {
           html = html.replace(
             lzwScript,
