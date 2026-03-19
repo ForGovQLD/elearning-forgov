@@ -1,0 +1,10 @@
+- Download files
+- Extract files
+- Put them in modules/aurion_elearning/new (Templ)
+- Run script over it: node scripts/aurion-elearning-module-prep.mjs modules/Aurion_elearning/new
+- Move files out into parent
+- Delete new
+- git stash 
+- checkout test branch
+- git stash pop
+- commit and PR.
