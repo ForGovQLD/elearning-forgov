@@ -2,34 +2,34 @@ function ExecuteScript(strId)
 {
   switch (strId)
   {
-      case "5ic0at6LoG2":
+      case "6nIBZ2HjJ1U":
         Script1();
         break;
-      case "6NukcOVC0it":
+      case "5ZEoDWWPg1r":
         Script2();
         break;
-      case "5uqjAazIBb2":
+      case "6L4kUaZKDo3":
         Script3();
         break;
-      case "5dzUSlE9hPe":
+      case "6KbziWuQnKO":
         Script4();
         break;
-      case "6b98el13ds9":
+      case "63qVtEzEjyK":
         Script5();
         break;
-      case "6gMi8jIwO87":
+      case "5mCYTtjUhzG":
         Script6();
         break;
-      case "6F1QHnHYMQg":
+      case "5Xm4Fjszwjc":
         Script7();
         break;
-      case "6gXOA5qh8CV":
+      case "5fFj0NoER9f":
         Script8();
         break;
-      case "6Y8EplNprcY":
+      case "69GUKA92sqB":
         Script9();
         break;
-      case "5tu53pnQqbI":
+      case "6FVfu512MeI":
         Script10();
         break;
   }
@@ -50,4 +50,7 @@ var showPointer = player.showPointer;
 var hidePointer = player.hidePointer;
 var slideWidth = player.slideWidth;
 var slideHeight = player.slideHeight;
+var getKeyDown = player.getKeyDown;
+var keydown = player.keydown;
+var keyup = player.keyup;
 };
