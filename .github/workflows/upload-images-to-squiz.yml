@@ -1,0 +1,51 @@
+name: Upload Images to Squiz
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_mode:
+        description: 'Run in test mode (first 10 images only)'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Write squiz/.env from secrets
+        run: |
+          mkdir -p squiz
+          printf 'FORGOV-ELEARNING-KEY=%s\n'       "${{ secrets.FORGOV_ELEARNING_KEY }}"       >> squiz/.env
+          printf 'FORGOV-ROOT-NODE=%s\n'            "${{ secrets.FORGOV_ROOT_NODE }}"            >> squiz/.env
+          printf 'FORGOV-CMS-URL=%s\n'              "${{ secrets.FORGOV_CMS_URL }}"              >> squiz/.env
+          printf 'SQUIZ_CMS_ASSET_ENDPOINT=%s\n'   "${{ secrets.SQUIZ_CMS_ASSET_ENDPOINT }}"    >> squiz/.env
+
+      - name: Upload images to Squiz
+        run: |
+          if [[ "${{ inputs.test_mode }}" == "true" ]]; then
+            node scripts/upload-images-to-squiz.mjs --test
+          else
+            node scripts/upload-images-to-squiz.mjs
+          fi
+
+      - name: Commit changes
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          # Only commit if there are staged changes
+          git diff --staged --quiet || git commit -m "chore: upload images to Squiz and hot-swap references [skip ci]"
+          git push
