@@ -112,22 +112,94 @@ async function findTextFiles(dir) {
 }
 
 // ---------------------------------------------------------------------------
-// Replace every reference to an image file in the containing module with
-// its new Squiz URL (hot-swap src / url() references)
+// Strategy 1 — Rise modules
+//
+// Rise stores ALL course content (including image filenames) as a
+// base64-encoded JSON blob in window.courseData. Each image object has a
+// `crushedKey` property whose value is the bare filename in the assets/
+// folder (e.g. "tWaMAiidfnZUSogE_9WucY0X0vFxNXN6d.jpg").
+//
+// The Rise player's internal resolvePath() passes absolute URLs through
+// unchanged (it checks for a leading "http" / "//" before prepending any
+// base path), so setting crushedKey to the full Squiz URL is safe.
+// ---------------------------------------------------------------------------
+
+const RISE_COURSE_DATA_RE = /window\.courseData\s*=\s*"([A-Za-z0-9+/=]+)"/;
+
+function replaceInRiseCourseData(content, filename, newUrl) {
+  const match = RISE_COURSE_DATA_RE.exec(content);
+  if (!match) return { content, count: 0 };
+
+  let json;
+  try {
+    json = JSON.parse(Buffer.from(match[1], 'base64').toString('utf8'));
+  } catch {
+    return { content, count: 0 };
+  }
+
+  let count = 0;
+
+  function walk(obj) {
+    if (Array.isArray(obj)) {
+      for (const item of obj) walk(item);
+    } else if (obj !== null && typeof obj === 'object') {
+      // Case 1: Rise image object with crushedKey/key pair.
+      // The player uses crushedKey first; resolvePath() passes absolute URLs
+      // through unchanged, so setting it to the full Squiz URL is safe.
+      if (typeof obj.crushedKey === 'string' && obj.crushedKey === filename) {
+        obj.crushedKey = newUrl;
+        obj.key        = newUrl;
+        // useCrushedKey stays true
+        count++;
+      }
+      // Case 2: Any other string property whose value is exactly the bare
+      // filename (e.g. avatar, src, url, thumbnail …).  Skip 'key' here
+      // because it is already handled above alongside 'crushedKey'.
+      for (const [k, val] of Object.entries(obj)) {
+        if (k !== 'crushedKey' && k !== 'key' &&
+            typeof val === 'string' && val === filename) {
+          obj[k] = newUrl;
+          count++;
+        }
+      }
+      // Recurse into all child values
+      for (const val of Object.values(obj)) walk(val);
+    }
+  }
+
+  walk(json);
+  if (count === 0) return { content, count: 0 };
+
+  const newBase64   = Buffer.from(JSON.stringify(json)).toString('base64');
+  const newContent  = content.replace(RISE_COURSE_DATA_RE, `window.courseData = "${newBase64}"`);
+  return { content: newContent, count };
+}
+
+// ---------------------------------------------------------------------------
+// Strategy 2 — Storyline / SCORM / plain HTML modules
+//
+// Images are referenced as plain relative paths in HTML, CSS and JS files
+// (e.g. src="../images/photo.jpg" or url('assets/photo.jpg')).
+// A regex matches any path string ending with the exact filename and
+// replaces it with the full Squiz URL.
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// replaceImageReferences — runs both strategies against every text file in
+// the same module directory and reports what was changed.
 // ---------------------------------------------------------------------------
 
 async function replaceImageReferences(imagePath, newUrl) {
-  const filename = path.basename(imagePath);
+  const filename  = path.basename(imagePath);
 
   // Scope search to the module root: modules/<ModuleName>/
-  const repoRel  = path.relative(path.resolve('./'), imagePath);
-  const parts    = repoRel.split(path.sep);
+  const repoRel   = path.relative(path.resolve('./'), imagePath);
+  const parts     = repoRel.split(path.sep);
   const moduleDir = path.resolve(parts[0], parts[1]);
 
   const textFiles = await findTextFiles(moduleDir);
   const updates   = [];
 
-  // Matches any relative path ending with this filename, e.g. ../images/photo.jpg
   const escapedName = filename.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const refRegex    = new RegExp(`[^"'\\s()]*${escapedName}`, 'g');
 
@@ -139,20 +211,29 @@ async function replaceImageReferences(imagePath, newUrl) {
       continue;
     }
 
-    if (!refRegex.test(content)) {
-      refRegex.lastIndex = 0;
-      continue;
+    let count = 0;
+
+    // Strategy 1: Rise base64 JSON blob (HTML files only)
+    if (path.extname(filePath).toLowerCase() === '.html') {
+      const result = replaceInRiseCourseData(content, filename, newUrl);
+      if (result.count > 0) {
+        content = result.content;
+        count  += result.count;
+      }
     }
+
+    // Strategy 2: Plain-text path regex (all file types)
     refRegex.lastIndex = 0;
+    if (refRegex.test(content)) {
+      refRegex.lastIndex = 0;
+      count  += (content.match(refRegex) || []).length;
+      content = content.replace(refRegex, newUrl);
+    }
 
-    const count   = (content.match(refRegex) || []).length;
-    const updated = content.replace(refRegex, newUrl);
-    await fs.promises.writeFile(filePath, updated, 'utf8');
-
-    updates.push({
-      file:  path.relative(path.resolve('./'), filePath),
-      count,
-    });
+    if (count > 0) {
+      await fs.promises.writeFile(filePath, content, 'utf8');
+      updates.push({ file: path.relative(path.resolve('./'), filePath), count });
+    }
   }
 
   return updates;
